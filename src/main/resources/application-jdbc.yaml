@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:jdbc_db;DB_CLOSE_DELAY=-1
+    username: mkomarov_jdbc
+    password:

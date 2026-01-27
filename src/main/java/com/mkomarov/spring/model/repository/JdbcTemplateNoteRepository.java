@@ -1,12 +1,14 @@
 package com.mkomarov.spring.model.repository;
 
 import com.mkomarov.spring.model.entity.Note;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
+@Profile("jdbctemplate")
 public class JdbcTemplateNoteRepository implements NoteRepository {
     private final JdbcTemplate jdbcTemplate;
 

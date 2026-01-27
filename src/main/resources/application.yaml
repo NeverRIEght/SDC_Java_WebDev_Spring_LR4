@@ -1,6 +1,8 @@
 spring:
   application:
     name: NotesApplication
+  profiles:
+    active: jdbc
   sql:
     init:
       mode: always
