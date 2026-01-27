@@ -1,56 +1,17 @@
 package com.mkomarov.spring.model.repository;
 
 import com.mkomarov.spring.model.entity.Note;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-@Component
-public class JdbcNoteRepository implements NoteRepository {
+@Repository
+public class JdbcTemplateNoteRepository implements NoteRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcNoteRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcTemplateNoteRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @PostConstruct
-    public void initDatabaseConnection() {
-        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS notes " +
-                "(id UUID DEFAULT RANDOM_UUID() PRIMARY KEY, " +
-                "title VARCHAR(255), " +
-                "content TEXT)");
-
-        addInitialRecords();
-    }
-
-    private void addInitialRecords() {
-        List<Note> initialNotes = new ArrayList<>();
-        for (int i = 1; i <= 100; i++) {
-            initialNotes.add(Note.builder()
-                    .id(UUID.randomUUID())
-                    .title("Note title " + i)
-                    .content("Note number " + i)
-                    .build());
-        }
-
-        jdbcTemplate.batchUpdate(
-                "INSERT INTO notes (id, title, content) VALUES (?, ?, ?)",
-                initialNotes,
-                100,
-                (ps, note) -> {
-                    ps.setObject(1, note.id());
-                    ps.setString(2, note.title());
-                    ps.setString(3, note.content());
-                }
-        );
-    }
-
-    @PreDestroy
-    public void destroyDatabaseConnection() {
-        jdbcTemplate.execute("DROP TABLE IF EXISTS notes");
     }
 
     @Override

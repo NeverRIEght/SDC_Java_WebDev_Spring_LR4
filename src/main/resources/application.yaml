@@ -1,6 +1,9 @@
 spring:
   application:
     name: NotesApplication
+  sql:
+    init:
+      mode: always
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:notesdb;DB_CLOSE_DELAY=-1
