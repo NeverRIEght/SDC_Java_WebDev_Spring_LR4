@@ -1,9 +1,10 @@
 package com.mkomarov.spring.controller;
 
 import com.mkomarov.spring.model.dto.CommonResponse;
-import com.mkomarov.spring.model.dto.NoteRequest;
+import com.mkomarov.spring.model.dto.request.NoteCreateRequest;
 import com.mkomarov.spring.model.dto.PaginatedResponse;
-import com.mkomarov.spring.model.entity.Note;
+import com.mkomarov.spring.model.dto.request.NoteUpdateRequest;
+import com.mkomarov.spring.model.dto.response.NoteResponseDto;
 import com.mkomarov.spring.service.NoteService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -26,7 +27,7 @@ public class NoteController {
     }
 
     @GetMapping
-    public ResponseEntity<PaginatedResponse<Note>> getAll(
+    public ResponseEntity<PaginatedResponse<NoteResponseDto>> getAll(
             @RequestParam(value = "nameFilter", required = false)
             String nameToFilterBy,
             @RequestParam(value = "page", defaultValue = "0", required = false)
@@ -41,25 +42,33 @@ public class NoteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommonResponse<Note>> getById(@PathVariable("id") UUID id) {
+    public ResponseEntity<CommonResponse<NoteResponseDto>> getById(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(noteService.getById(id));
     }
 
     @PostMapping
-    public ResponseEntity<CommonResponse<Note>> create(@Valid @RequestBody NoteRequest request) {
+    public ResponseEntity<CommonResponse<NoteResponseDto>> create(@Valid @RequestBody NoteCreateRequest request) {
         return ResponseEntity.ok(noteService.create(request));
     }
 
+    @PutMapping()
+    public ResponseEntity<CommonResponse<NoteResponseDto>> update(
+            @Valid @RequestBody NoteUpdateRequest request
+    ) {
+        return ResponseEntity.ok(noteService.update(request));
+    }
+
+    @Deprecated
     @PutMapping("/{id}")
-    public ResponseEntity<CommonResponse<Note>> update(
+    public ResponseEntity<CommonResponse<NoteResponseDto>> update(
             @PathVariable("id") UUID id,
-            @Valid @RequestBody NoteRequest request
+            @Valid @RequestBody NoteCreateRequest request
     ) {
         return ResponseEntity.ok(noteService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CommonResponse<Note>> delete(@PathVariable("id") UUID id) {
+    public ResponseEntity<CommonResponse<NoteResponseDto>> delete(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(noteService.delete(id));
     }
 }

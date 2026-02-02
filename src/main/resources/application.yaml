@@ -2,7 +2,7 @@ spring:
   application:
     name: NotesApplication
   profiles:
-    active: jdbc
+    active: jpa
   sql:
     init:
       mode: always
@@ -11,3 +11,11 @@ spring:
     url: jdbc:h2:mem:notesdb;DB_CLOSE_DELAY=-1
     username: mkomarov
     password:
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
