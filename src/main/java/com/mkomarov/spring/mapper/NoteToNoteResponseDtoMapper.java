@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component;
 public class NoteToNoteResponseDtoMapper implements AbstractMapper<Note, NoteResponseDto> {
     @Override
     public NoteResponseDto map(Note note) {
+        if (note == null) {
+            return null;
+        }
+
         Category category = note.getCategory();
 
         return NoteResponseDto.builder()

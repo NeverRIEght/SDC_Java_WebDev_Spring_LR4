@@ -63,4 +63,11 @@ public class GlobalExceptionHandler {
                 CommonResponse.error("Parameter validation failed: " + e.getMessage())
         );
     }
+
+    @ExceptionHandler(ResourceConflictException.class)
+    public ResponseEntity<CommonResponse<?>> handleResourceConflictException(ResourceConflictException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                CommonResponse.error(e.getMessage())
+        );
+    }
 }
