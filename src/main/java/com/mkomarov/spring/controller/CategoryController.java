@@ -12,7 +12,15 @@ import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
@@ -29,9 +37,15 @@ public class CategoryController {
 
     @GetMapping
     public ResponseEntity<PaginatedResponse<CategoryResponseDto>> getAll(
-            @RequestParam(required = false) String nameFilter,
-            @RequestParam(defaultValue = "0") @Min(0) Integer page,
-            @RequestParam(defaultValue = "10") @Min(1) @Max(100) Integer size
+            @RequestParam(required = false)
+            String nameFilter,
+            @RequestParam(defaultValue = "0")
+            @Min(0)
+            Integer page,
+            @RequestParam(defaultValue = "10")
+            @Min(1)
+            @Max(100)
+            Integer size
     ) {
         return ResponseEntity.ok(categoryService.getAll(nameFilter, page, size));
     }
@@ -54,7 +68,6 @@ public class CategoryController {
             @Valid @RequestBody CategoryUpdateRequest request
     ) {
         if (!id.equals(request.id())) {
-            // Можно выкинуть кастомный эксепшен или обработать тут
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(categoryService.update(request));
