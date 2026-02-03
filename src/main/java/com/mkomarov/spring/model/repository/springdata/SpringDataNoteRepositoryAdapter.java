@@ -6,10 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -24,9 +25,11 @@ public class SpringDataNoteRepositoryAdapter implements NoteRepository {
     }
 
     @Override
-    public Set<Note> getAll(String title, int limit, int offset) {
-        Pageable pageable = PageRequest.of(offset / limit, limit);
-        return repository.findAllByTitle(title, pageable).toSet();
+    public List<Note> getAll(String title, int limit, int offset) {
+        int pageNumber = offset / limit;
+
+        Pageable pageable = PageRequest.of(pageNumber, limit, Sort.by("id").ascending());
+        return repository.findAllByTitle(title, pageable).toList();
     }
 
     @Override

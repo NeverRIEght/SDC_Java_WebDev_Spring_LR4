@@ -1,6 +1,7 @@
-package com.mkomarov.spring.model.repository;
+package com.mkomarov.spring.model.repository.hibernate;
 
 import com.mkomarov.spring.model.entity.Note;
+import com.mkomarov.spring.model.repository.NoteRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -8,9 +9,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -52,7 +52,7 @@ public class JpaNoteRepository implements NoteRepository {
     }
 
     @Override
-    public Set<Note> getAll(String title, int limit, int offset) {
+    public List<Note> getAll(String title, int limit, int offset) {
         String jpql = "SELECT n FROM Note n LEFT JOIN FETCH n.category " +
                 "WHERE :title IS NULL OR n.title LIKE :title";
 
@@ -61,7 +61,7 @@ public class JpaNoteRepository implements NoteRepository {
                 .setFirstResult(offset)
                 .setMaxResults(limit);
 
-        return new HashSet<>(query.getResultList());
+        return query.getResultList();
     }
 
     @Override

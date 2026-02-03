@@ -6,12 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Repository
 @Profile("spring-data")
@@ -25,11 +25,13 @@ public class SpringDataCategoryRepositoryAdapter implements CategoryRepository {
     }
 
     @Override
-    public Set<Category> getAll(String name, int limit, int offset) {
-        Pageable pageable = PageRequest.of(offset / limit, limit);
+    public List<Category> getAll(String name, int limit, int offset) {
+        int pageNumber = offset / limit;
+
+        Pageable pageable = PageRequest.of(pageNumber, limit, Sort.by("id").ascending());
         return repository.findAllByName(name, pageable)
                 .stream()
-                .collect(Collectors.toSet());
+                .toList();
     }
 
     @Override

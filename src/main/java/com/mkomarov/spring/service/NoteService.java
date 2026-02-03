@@ -1,10 +1,13 @@
 package com.mkomarov.spring.service;
 
-import com.mkomarov.spring.exception.classes.*;
+import com.mkomarov.spring.exception.classes.InvalidPaginationException;
+import com.mkomarov.spring.exception.classes.InvalidRequestException;
+import com.mkomarov.spring.exception.classes.ResourceAlreadyExistsException;
+import com.mkomarov.spring.exception.classes.ResourceNotFoundException;
 import com.mkomarov.spring.mapper.NoteToNoteResponseDtoMapper;
 import com.mkomarov.spring.model.dto.CommonResponse;
-import com.mkomarov.spring.model.dto.request.NoteCreateRequest;
 import com.mkomarov.spring.model.dto.PaginatedResponse;
+import com.mkomarov.spring.model.dto.request.NoteCreateRequest;
 import com.mkomarov.spring.model.dto.request.NoteUpdateRequest;
 import com.mkomarov.spring.model.dto.response.NoteResponseDto;
 import com.mkomarov.spring.model.entity.Category;
@@ -16,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -61,7 +63,7 @@ public class NoteService {
         }
 
         int offset = page * size;
-        Set<Note> notes = noteRepository.getAll(title, size, offset);
+        List<Note> notes = noteRepository.getAll(title, size, offset);
         long totalElements = noteRepository.count(title);
 
         List<NoteResponseDto> responseDtos = notes.stream()
@@ -105,10 +107,6 @@ public class NoteService {
 
     @Transactional
     public CommonResponse<NoteResponseDto> update(NoteUpdateRequest request) {
-        if (request.id() == null) {
-            throw new InvalidRequestException("Id must not be null");
-        }
-
         Note note = noteRepository.getById(request.id())
                 .orElseThrow(() -> new ResourceNotFoundException("No Note found with id: " + request.id()));
 

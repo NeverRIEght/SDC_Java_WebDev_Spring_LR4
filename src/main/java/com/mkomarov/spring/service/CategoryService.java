@@ -1,6 +1,9 @@
 package com.mkomarov.spring.service;
 
-import com.mkomarov.spring.exception.classes.*;
+import com.mkomarov.spring.exception.classes.InvalidPaginationException;
+import com.mkomarov.spring.exception.classes.ResourceAlreadyExistsException;
+import com.mkomarov.spring.exception.classes.ResourceConflictException;
+import com.mkomarov.spring.exception.classes.ResourceNotFoundException;
 import com.mkomarov.spring.mapper.CategoryToCategoryResponseDtoMapper;
 import com.mkomarov.spring.model.dto.CommonResponse;
 import com.mkomarov.spring.model.dto.PaginatedResponse;
@@ -16,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -48,7 +50,7 @@ public class CategoryService {
         }
 
         int offset = page * size;
-        Set<Category> categories = categoryRepository.getAll(name, size, offset);
+        List<Category> categories = categoryRepository.getAll(name, size, offset);
         long totalElements = categoryRepository.count(name);
 
         List<CategoryResponseDto> responseDtos = categories.stream()

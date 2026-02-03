@@ -2,7 +2,7 @@ spring:
   application:
     name: NotesApplication
   profiles:
-    active: jpa
+    active: spring-data
   sql:
     init:
       mode: always

@@ -1,6 +1,7 @@
-package com.mkomarov.spring.model.repository;
+package com.mkomarov.spring.model.repository.hibernate;
 
 import com.mkomarov.spring.model.entity.Category;
+import com.mkomarov.spring.model.repository.CategoryRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -8,9 +9,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -52,7 +52,7 @@ public class JpaCategoryRepository implements CategoryRepository {
     }
 
     @Override
-    public Set<Category> getAll(String name, int limit, int offset) {
+    public List<Category> getAll(String name, int limit, int offset) {
         String jpql = "SELECT c FROM Category c WHERE :name IS NULL OR c.name LIKE :name";
 
         TypedQuery<Category> query = entityManager.createQuery(jpql, Category.class)
@@ -60,7 +60,7 @@ public class JpaCategoryRepository implements CategoryRepository {
                 .setFirstResult(offset)
                 .setMaxResults(limit);
 
-        return new HashSet<>(query.getResultList());
+        return query.getResultList();
     }
 
     @Override
