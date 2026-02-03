@@ -35,20 +35,27 @@ public class CategoryService {
     }
 
     public PaginatedResponse<CategoryResponseDto> getAll(String name, Integer page, Integer size) {
-        if (page == null || size == null || page < 0 || size <= 0) {
-            throw new InvalidPaginationException("Invalid page or size", page, size);
+        if (page == null || size == null) {
+            throw new InvalidPaginationException("Page and size must be present", page, size);
         }
-        if (size > PAGINATION_MAX_SIZE) size = PAGINATION_MAX_SIZE;
+
+        if (page < 0 || size <= 0) {
+            throw new InvalidPaginationException("Page and size must be positive", page, size);
+        }
+
+        if (size > PAGINATION_MAX_SIZE) {
+            size = PAGINATION_MAX_SIZE;
+        }
 
         int offset = page * size;
         Set<Category> categories = categoryRepository.getAll(name, size, offset);
         long totalElements = categoryRepository.count(name);
 
-        List<CategoryResponseDto> dtos = categories.stream()
+        List<CategoryResponseDto> responseDtos = categories.stream()
                 .map(categoryMapper::map)
                 .toList();
 
-        return PaginatedResponse.success(dtos, page, size, totalElements);
+        return PaginatedResponse.success(responseDtos, page, size, totalElements);
     }
 
     @Transactional
@@ -76,7 +83,7 @@ public class CategoryService {
 
         if (!category.getName().equals(request.name())) {
             categoryRepository.getByName(request.name())
-                    .ifPresent(c -> {
+                    .ifPresent(_ -> {
                         throw new ResourceAlreadyExistsException("Name already taken");
                     });
         }
@@ -110,7 +117,7 @@ public class CategoryService {
 
             if (note.getCategory() != null && !note.getCategory().getId().equals(category.getId())) {
                 throw new ResourceConflictException(
-                        "Note '" + note.getTitle() + "' is already assigned to category: " + note.getCategory().getName()
+                        "Note \"" + note.getTitle() + "\" is already assigned to category: " + note.getCategory().getName()
                 );
             }
 
