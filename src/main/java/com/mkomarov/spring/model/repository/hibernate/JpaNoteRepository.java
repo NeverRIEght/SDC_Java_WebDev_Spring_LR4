@@ -52,7 +52,7 @@ public class JpaNoteRepository implements NoteRepository {
     }
 
     @Override
-    public List<Note> getAll(String title, int limit, int offset) {
+    public List<Note> getAll(String title, int limit, int offset, String sortBy, String direction) {
         String jpql = "SELECT n FROM Note n LEFT JOIN FETCH n.category " +
                 "WHERE :title IS NULL OR n.title LIKE :title";
 

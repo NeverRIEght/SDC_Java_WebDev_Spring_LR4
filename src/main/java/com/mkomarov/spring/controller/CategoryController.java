@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping(value = "/api/categories")
 @Validated
 public class CategoryController {
 
@@ -45,9 +45,13 @@ public class CategoryController {
             @RequestParam(defaultValue = "10")
             @Min(1)
             @Max(100)
-            Integer size
+            Integer size,
+            @RequestParam(value = "sortBy", defaultValue = "title")
+            String sortBy,
+            @RequestParam(value = "direction", defaultValue = "ASC")
+            String direction
     ) {
-        return ResponseEntity.ok(categoryService.getAll(nameFilter, page, size));
+        return ResponseEntity.ok(categoryService.getAll(nameFilter, page, size, sortBy, direction));
     }
 
     @GetMapping("/{id}")

@@ -49,7 +49,11 @@ public class NoteService {
         return CommonResponse.success(responseDto);
     }
 
-    public PaginatedResponse<NoteResponseDto> getAll(String title, Integer page, Integer size) {
+    public PaginatedResponse<NoteResponseDto> getAll(String title,
+                                                     Integer page,
+                                                     Integer size,
+                                                     String sortBy,
+                                                     String direction) {
         if (page == null || size == null) {
             throw new InvalidPaginationException("Page and size must be present", page, size);
         }
@@ -63,7 +67,7 @@ public class NoteService {
         }
 
         int offset = page * size;
-        List<Note> notes = noteRepository.getAll(title, size, offset);
+        List<Note> notes = noteRepository.getAll(title, size, offset, sortBy, direction);
         long totalElements = noteRepository.count(title);
 
         List<NoteResponseDto> responseDtos = notes.stream()

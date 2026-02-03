@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface NoteRepository {
     Optional<Note> getById(UUID id);
 
-    List<Note> getAll(String title, int limit, int offset);
+    List<Note> getAll(String title, int limit, int offset, String sortBy, String direction);
     Note create(Note note);
     boolean update(Note note);
     Optional<Note> delete(UUID id);

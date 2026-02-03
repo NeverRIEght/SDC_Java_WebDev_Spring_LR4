@@ -36,7 +36,11 @@ public class CategoryService {
         return CommonResponse.success(categoryMapper.map(category));
     }
 
-    public PaginatedResponse<CategoryResponseDto> getAll(String name, Integer page, Integer size) {
+    public PaginatedResponse<CategoryResponseDto> getAll(String name,
+                                                         Integer page,
+                                                         Integer size,
+                                                         String sortBy,
+                                                         String direction) {
         if (page == null || size == null) {
             throw new InvalidPaginationException("Page and size must be present", page, size);
         }
@@ -50,7 +54,7 @@ public class CategoryService {
         }
 
         int offset = page * size;
-        List<Category> categories = categoryRepository.getAll(name, size, offset);
+        List<Category> categories = categoryRepository.getAll(name, size, offset, sortBy, direction);
         long totalElements = categoryRepository.count(name);
 
         List<CategoryResponseDto> responseDtos = categories.stream()

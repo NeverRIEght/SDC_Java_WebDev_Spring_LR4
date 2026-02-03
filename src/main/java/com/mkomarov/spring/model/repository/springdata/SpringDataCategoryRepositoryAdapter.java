@@ -25,10 +25,14 @@ public class SpringDataCategoryRepositoryAdapter implements CategoryRepository {
     }
 
     @Override
-    public List<Category> getAll(String name, int limit, int offset) {
+    public List<Category> getAll(String name, int limit, int offset, String sortBy, String direction) {
         int pageNumber = offset / limit;
 
-        Pageable pageable = PageRequest.of(pageNumber, limit, Sort.by("id").ascending());
+        Sort sort = direction.equalsIgnoreCase("DESC")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(pageNumber, limit, sort);
         return repository.findAllByName(name, pageable)
                 .stream()
                 .toList();

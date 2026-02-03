@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface CategoryRepository {
     Optional<Category> getById(UUID id);
 
-    List<Category> getAll(String title, int limit, int offset);
+    List<Category> getAll(String name, int limit, int offset, String sortBy, String direction);
     Category create(Category category);
     boolean update(Category category);
     Optional<Category> delete(UUID id);

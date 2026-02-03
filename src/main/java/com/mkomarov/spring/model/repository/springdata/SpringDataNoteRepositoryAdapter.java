@@ -25,10 +25,15 @@ public class SpringDataNoteRepositoryAdapter implements NoteRepository {
     }
 
     @Override
-    public List<Note> getAll(String title, int limit, int offset) {
+    public List<Note> getAll(String title, int limit, int offset, String sortBy, String direction) {
         int pageNumber = offset / limit;
 
-        Pageable pageable = PageRequest.of(pageNumber, limit, Sort.by("id").ascending());
+        Sort sort = direction.equalsIgnoreCase("DESC")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(pageNumber, limit, sort);
+
         return repository.findAllByTitle(title, pageable).toList();
     }
 

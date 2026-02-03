@@ -52,7 +52,7 @@ public class JpaCategoryRepository implements CategoryRepository {
     }
 
     @Override
-    public List<Category> getAll(String name, int limit, int offset) {
+    public List<Category> getAll(String name, int limit, int offset, String sortBy, String direction) {
         String jpql = "SELECT c FROM Category c WHERE :name IS NULL OR c.name LIKE :name";
 
         TypedQuery<Category> query = entityManager.createQuery(jpql, Category.class)

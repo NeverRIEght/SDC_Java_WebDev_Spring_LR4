@@ -1,8 +1,8 @@
 package com.mkomarov.spring.controller;
 
 import com.mkomarov.spring.model.dto.CommonResponse;
-import com.mkomarov.spring.model.dto.request.NoteCreateRequest;
 import com.mkomarov.spring.model.dto.PaginatedResponse;
+import com.mkomarov.spring.model.dto.request.NoteCreateRequest;
 import com.mkomarov.spring.model.dto.request.NoteUpdateRequest;
 import com.mkomarov.spring.model.dto.response.NoteResponseDto;
 import com.mkomarov.spring.service.NoteService;
@@ -11,7 +11,15 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
@@ -36,9 +44,13 @@ public class NoteController {
             @RequestParam(value = "size", defaultValue = "2", required = false)
             @Min(0)
             @Max(100)
-            Integer size
+            Integer size,
+            @RequestParam(value = "sortBy", defaultValue = "title")
+            String sortBy,
+            @RequestParam(value = "direction", defaultValue = "ASC")
+            String direction
     ) {
-        return ResponseEntity.ok(noteService.getAll(nameToFilterBy, page, size));
+        return ResponseEntity.ok(noteService.getAll(nameToFilterBy, page, size, sortBy, direction));
     }
 
     @GetMapping("/{id}")
