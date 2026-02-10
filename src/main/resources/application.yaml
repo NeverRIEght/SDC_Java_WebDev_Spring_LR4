@@ -1,16 +1,21 @@
+server:
+  port: ${APP_EXTERNAL_PORT}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
 spring:
   application:
-    name: NotesApplication
-  profiles:
-    active: spring-data
-  sql:
-    init:
-      mode: always
+    name: ${APP_NAME}
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:notesdb;DB_CLOSE_DELAY=-1
-    username: mkomarov
-    password:
+    url: jdbc:postgresql://${HOSTNAME}:${DB_EXTERNAL_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
   jpa:
     defer-datasource-initialization: true
     hibernate:

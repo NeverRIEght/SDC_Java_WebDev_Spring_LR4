@@ -1,0 +1,6 @@
+server:
+  port: ${APP_INTERNAL_PORT}
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOSTNAME}:${DB_INTERNAL_PORT}/${DB_NAME}

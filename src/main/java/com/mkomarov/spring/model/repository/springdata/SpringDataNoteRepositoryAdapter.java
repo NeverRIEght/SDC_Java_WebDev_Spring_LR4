@@ -3,7 +3,6 @@ package com.mkomarov.spring.model.repository.springdata;
 import com.mkomarov.spring.model.entity.Note;
 import com.mkomarov.spring.model.repository.NoteRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,7 +13,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-@Profile("spring-data")
 @RequiredArgsConstructor
 public class SpringDataNoteRepositoryAdapter implements NoteRepository {
     private final SpringDataNoteRepository repository;
