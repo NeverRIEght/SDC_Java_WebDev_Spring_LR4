@@ -11,7 +11,7 @@ services:
       - "${APP_EXTERNAL_PORT}:${APP_INTERNAL_PORT}"
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://${HOSTNAME}:${APP_EXTERNAL_PORT}/actuator/health" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:${APP_INTERNAL_PORT}/actuator/health" ]
       interval: 5s
       timeout: 40s
       retries: 10

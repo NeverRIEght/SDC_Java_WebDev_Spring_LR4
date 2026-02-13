@@ -3,13 +3,17 @@ package com.mkomarov.spring.config;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
+import org.springframework.boot.amqp.autoconfigure.SimpleRabbitListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.retry.RetryPolicy;
+import org.springframework.core.retry.RetryTemplate;
 
 @Configuration
 public class RabbitMQConfig {
@@ -17,15 +21,31 @@ public class RabbitMQConfig {
     public static final String QUEUE_NAME = "note.enrichment.queue";
     public static final String EXCHANGE_NAME = "note.enrichment.exchange";
     public static final String ROUTING_KEY = "note.enrichment.routing.key";
+    public static final String DLQ_NAME = "note.enrichment.dlq";
+    public static final String DLQ_EXCHANGE_NAME = "note.enrichment.dlq.exchange";
+    public static final String DLQ_ROUTING_KEY = "note.enrichment.dlq.routing.key";
 
     @Bean
     public Queue enrichmentQueue() {
-        return new Queue(QUEUE_NAME, true); // durable queue
+        return QueueBuilder.durable(QUEUE_NAME)
+                .withArgument("x-dead-letter-exchange", DLQ_EXCHANGE_NAME)
+                .withArgument("x-dead-letter-routing-key", DLQ_ROUTING_KEY)
+                .build();
+    }
+
+    @Bean
+    public Queue deadLetterQueue() {
+        return new Queue(DLQ_NAME, true);
     }
 
     @Bean
     public TopicExchange enrichmentExchange() {
         return new TopicExchange(EXCHANGE_NAME);
+    }
+
+    @Bean
+    public TopicExchange deadLetterExchange() {
+        return new TopicExchange(DLQ_EXCHANGE_NAME);
     }
 
     @Bean
@@ -37,15 +57,52 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public MessageConverter jsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
+    public Binding deadLetterBinding(Queue deadLetterQueue, TopicExchange deadLetterExchange) {
+        return BindingBuilder
+                .bind(deadLetterQueue)
+                .to(deadLetterExchange)
+                .with(DLQ_ROUTING_KEY);
     }
 
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+    public JacksonJsonMessageConverter messageConverter() {
+        return new JacksonJsonMessageConverter();
+    }
+
+    @Bean
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, JacksonJsonMessageConverter messageConverter) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(jsonMessageConverter());
+        rabbitTemplate.setMessageConverter(messageConverter);
         return rabbitTemplate;
+    }
+
+    @Bean
+    public RetryTemplate retryTemplate() {
+        RetryTemplate retryTemplate = new RetryTemplate();
+
+        RetryPolicy retryPolicy = RetryPolicy.builder()
+                .maxRetries(3)
+                .build();
+
+        retryTemplate.setRetryPolicy(retryPolicy);
+
+        return retryTemplate;
+    }
+
+    @Bean
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
+            ConnectionFactory connectionFactory,
+            SimpleRabbitListenerContainerFactoryConfigurer configurer,
+            JacksonJsonMessageConverter messageConverter,
+            RetryTemplate retryTemplate) {
+
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        configurer.configure(factory, connectionFactory);
+        factory.setMessageConverter(messageConverter);
+        factory.setRetryTemplate(retryTemplate);
+        factory.setDefaultRequeueRejected(false);
+
+        return factory;
     }
 }
 

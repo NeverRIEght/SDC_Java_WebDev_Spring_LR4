@@ -7,6 +7,7 @@ import com.mkomarov.spring.model.entity.Note;
 import com.mkomarov.spring.model.repository.NoteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -37,10 +38,14 @@ public class EnrichmentMessageListener {
             log.info("Successfully processed enrichment message. CorrelationId: {}",
                     message.getCorrelationId());
 
+        } catch (ResourceNotFoundException e) {
+            log.error("Note not found - sending to DLQ. CorrelationId: {}, Error: {}",
+                    message.getCorrelationId(), e.getMessage());
+            throw new AmqpRejectAndDontRequeueException("Note not found - cannot process", e);
         } catch (Exception e) {
             log.error("Failed to process enrichment message. CorrelationId: {}, Error: {}",
                     message.getCorrelationId(), e.getMessage(), e);
-            // Retry, send to a dead letter queue, call external error logging service, etc.
+            // Retry, then send to DLQ
             throw new RuntimeException("Failed to process enrichment", e);
         }
     }

@@ -29,3 +29,7 @@ spring:
     port: ${RABBITMQ_EXTERNAL_PORT}
     username: ${RABBITMQ_USER}
     password: ${RABBITMQ_PASSWORD}
+    listener:
+      simple:
+        default-requeue-rejected: false
+        acknowledge-mode: auto
