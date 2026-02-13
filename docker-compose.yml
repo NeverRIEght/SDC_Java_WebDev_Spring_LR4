@@ -18,6 +18,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
   postgres:
     container_name: ${DB_HOSTNAME}
     image: postgres:17.4
@@ -35,3 +37,18 @@ services:
       interval: 5s
       timeout: 40s
       retries: 10
+  rabbitmq:
+    container_name: ${RABBITMQ_HOSTNAME}
+    image: rabbitmq:4.0-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "${RABBITMQ_EXTERNAL_PORT}:${RABBITMQ_INTERNAL_PORT}"
+      - "${RABBITMQ_MANAGEMENT_EXTERNAL_PORT}:${RABBITMQ_MANAGEMENT_INTERNAL_PORT}"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

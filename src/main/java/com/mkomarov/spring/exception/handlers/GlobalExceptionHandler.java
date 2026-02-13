@@ -39,6 +39,12 @@ public class GlobalExceptionHandler {
                 .body(CommonResponse.error(e.getMessage()));
     }
 
+    @ExceptionHandler(ExternalApiException.class)
+    public ResponseEntity<CommonResponse<?>> handleExternalApiException(ExternalApiException e) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body(CommonResponse.error("External API error: " + e.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CommonResponse<?>> handleValidationException(MethodArgumentNotValidException e) {
         String errorMessage = e.getBindingResult().getFieldErrors().stream()
